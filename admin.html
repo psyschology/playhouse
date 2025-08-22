@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Page</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@3.3.1/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-image: url('images.png'); /* Add your PNG image */
+            background-repeat: no-repeat; /* Prevent the image from repeating */
+            background-size: cover; /* Scale the image to cover the entire background */
+            background-position: center center; /* Center the background image */
+            background-attachment: fixed; /* Keep the background fixed when scrolling */
+            background-color: #8A2BE2; /* Fallback background color */
+        }
+    </style>
+</head>
+<body class="font-sans text-white">
+
+    <div id="loginSection" class="flex flex-col items-center p-6 bg-zinc-900 rounded-lg shadow-lg w-96">
+        <h2 class="text-2xl font-bold mb-4 text-green-400">Admin Login</h2>
+        <input type="email" id="email" placeholder="Enter Email" class="mb-3 p-2 rounded text-black w-full" />
+        <input type="password" id="password" placeholder="Enter Password" class="mb-3 p-2 rounded text-black w-full" />
+        <button id="loginBtn" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded w-full">Login</button>
+        <p id="loginMessage" class="text-red-400 mt-3"></p>
+      </div>
+    
+      <!-- Admin Panel Section -->
+      <div id="adminSection" class="flex flex-col items-center p-6 bg-zinc-800 rounded-lg shadow-lg w-96">
+        <h2 class="text-2xl font-bold text-green-400 mb-4">Welcome Admin</h2>
+        <p class="mb-4">You are logged in.</p>
+        <button id="logoutBtn" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded">Logout</button>
+      </div>
+    
+      <!-- Firebase Scripts -->
+      <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut }
+          from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
+    
+        // 🔹 Replace with your Firebase Config
+        const firebaseConfig = {
+            apiKey: "AIzaSyCp7EfhVsUiqfeS5PATugITeTCGtcJhR1U",
+            authDomain: "flower-based.firebaseapp.com",
+            databaseURL: "https://flower-based-default-rtdb.firebaseio.com",
+            projectId: "flower-based",
+            storageBucket: "flower-based.firebasestorage.app",
+            messagingSenderId: "642271618372",
+            appId: "1:642271618372:web:906af32f5b2ec8626ba311",      
+        };
+    
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+    
+        const loginSection = document.getElementById("loginSection");
+        const adminSection = document.getElementById("adminSection");
+        const loginMessage = document.getElementById("loginMessage");
+    
+        // Login Button
+        document.getElementById("loginBtn").addEventListener("click", () => {
+          const email = document.getElementById("email").value;
+          const password = document.getElementById("password").value;
+    
+          signInWithEmailAndPassword(auth, email, password)
+            .then(() => {
+              loginMessage.textContent = "Login successful!";
+            })
+            .catch((error) => {
+              loginMessage.textContent = error.message;
+            });
+        });
+    
+        // Monitor Auth State
+        onAuthStateChanged(auth, (user) => {
+          if (user) {
+            loginSection.classList.add("hidden");
+            adminSection.classList.remove("hidden");
+          } else {
+            loginSection.classList.remove("hidden");
+            adminSection.classList.add("hidden");
+          }
+        });
+    
+        // Logout Button
+        document.getElementById("logoutBtn").addEventListener("click", () => {
+          signOut(auth);
+        });
+      </script>
+
+    <div class="container mx-auto p-6">
+        <h1 class="text-3xl font-bold mb-6">Admin Controls</h1>
+        <div class="space-y-4">
+            <button id="startGame" class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded">Start Game</button>
+            <button id="endGame" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded">End Game</button>
+            <button id="setGameTime" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded">Set Game Time and Date</button>
+            <button id="setTicketLimit" class="bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-2 px-4 rounded">Set Ticket Limit</button>
+            <button id="bookTicket" class="bg-purple-500 hover:bg-purple-600 text-white font-bold py-2 px-4 rounded">Book Ticket</button>
+        </div>
+
+        <!-- New awards section -->
+    <h2>Set Awards</h2>
+    <table id="awardsTable">
+        <tr>
+            <th>Award Type</th>
+            <th>Amount</th>
+        </tr>
+        <tr>
+            <td>Full House</td>
+            <td><input type="number" id="fullHouseAmount" /></td>
+        </tr>
+        <tr>
+            <td>Top Line</td>
+            <td><input type="number" id="topLineAmount" /></td>
+        </tr>
+        <tr>
+            <td>Middle Line</td>
+            <td><input type="number" id="middleLineAmount" /></td>
+        </tr>
+        <tr>
+            <td>Bottom Line</td>
+            <td><input type="number" id="bottomLineAmount" /></td>
+        </tr>
+        <tr>
+            <td>Four Corners</td>
+            <td><input type="number" id="fourCornersAmount" /></td>
+        </tr>
+        <tr>
+            <td>Early Five</td>
+            <td><input type="number" id="earlyFiveAmount" /></td>
+        </tr>
+        <tr>
+            <td>Odd-Even</td>
+            <td><input type="number" id="oddEvenAmount" /></td>
+        </tr>
+        <tr>
+            <td>Diagonal</td>
+            <td><input type="number" id="diagonalAmount" /></td>
+        </tr>
+    </table>
+    <button id="setAwardsButton">Set Awards for the Game</button>
+        
+        <div id="message" class="mt-6"></div>
+<style>
+    /* Admin Page Styles */
+#awardsTable {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+#awardsTable th, #awardsTable td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+}
+
+#awardsTable th {
+    background-color: #f4f4f4;
+}
+
+button {
+    background-color: #4CAF50; /* Green */
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+button:hover {
+    background-color: #45a049;
+}
+
+/* User Page Styles */
+#awards {
+    margin-top: 20px;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+#awards h2 {
+    margin-top: 0;
+}
+
+#awards div {
+    margin-bottom: 10px;
+}
+
+#awards h3 {
+    margin: 0;
+    color: #333;
+}
+
+#awards p {
+    margin: 5px 0;
+    color: #666;
+}
+
+</style>
+
+    <!-- Firebase SDKs -->
+    <script type="module" src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
+    <script type="module" src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js"></script>
+    <script type="module" src="admin.js"></script>
+</body>
+</html>
